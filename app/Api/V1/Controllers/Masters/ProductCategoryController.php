@@ -17,47 +17,50 @@ class ProductCategoryController extends Controller
     {
         $status = true;
         $id = $request->get('id');
+        $user = TokenController::getUser();
         $current_company_id = TokenController::getCompanyId();
         if($id == 'new')
         {
-            $count = RawProduct::where('product_name',$request->get('raw_product_name'))
+            $count = ProductCategory::where('product_category_name',$request->get('product_category_name'))
                                 ->where('company_id',$current_company_id)
                                 ->count();
             if($count>0)
             {
                 $status = false;
                 $message = 'Please fill the form correctly!!!';
-                $error['product_name'] = 'Raw Product with this name Already Exists';
+                $error['product_category_name'] = 'Product Category with this name Already Exists';
             }
             else
             {
-                $raw = new RawProduct();
-                $raw->company_id = $current_company_id;
+                $category = new ProductCategory();
+                $category->company_id = $current_company_id;
                 $message = "Record added Successfully";
+                $category->created_by_id = $user->id;
             }
             
         }
         else
         {
             $message = 'Record Updated Successfully';
-            $raw = RawProduct::findOrFail($id);
+            $category = ProductCategory::findOrFail($id);
         }
         if($status)
         {
-            
+            $category->product_category_name = $request->get('product_category_name');
+            $category->updated_by_id = $user->id;
             try
             {
-                $raw->save();
+                $category->save();
             }
             catch(\Exception $e)
             {
                 $status = false;
                 $message = 'Something is wrong. Kindly Contact Admin';
             }
-            $raw = $this->query()->where('rp.id',$raw->id)->first();
+            $category = $this->query()->where('id',$category->id)->first();
             return response()->json([
                 'status' => $status,
-                'data' => $raw,
+                'data' => $category,
                 'message'=>$message
                 ]);
         }
@@ -77,38 +80,19 @@ class ProductCategoryController extends Controller
     {
 
         $current_company_id = TokenController::getCompanyId();
-        $query = DB::table('raw_products as rp')
-                ->leftJoin('unit_of_measurements as uom1','rp.product_uom','uom1.id')
-                ->leftJoin('unit_of_measurements as uom2','rp.product_conv_uom','uom2.id')
-                ->leftJoin('taxes as t','rp.gst_rate','t.id')
+        $query = DB::table('product_categories as pc')
                 ->select(
-                'rp.id','rp.product_name','rp.product_display_name','rp.product_code','rp.conv_factor','rp.batch_type','rp.stock_ledger','rp.product_rate_pick','rp.product_purchase_rate','rp.mrp_rate','rp.sales_rate','rp.gst_rate','rp.max_level','rp.min_level','rp.description'
+                'pc.id','pc.product_category_name'
                 )
-                ->addSelect('uom1.unit_name')
-                ->addSelect('uom2.unit_name as conversion_uom')
-                ->addSelect('t.id','t.tax_name','t.tax_rate')
-                ->where('rp.company_id',$current_company_id);
+                ->where('pc.company_id',$current_company_id);
         return $query;
     }
 
     public function TableColumn()
     {         
         $TableColumn = array(
-                       "id"=>"rp.id",
-                       "product_name"=>"rp.product_name",                       
-                       "product_display_name"=>"rp.product_display_name",
-                       "product_code"=>"rp.product_code",                       
-                       "conv_factor"=>"rp.conv_factor",
-                       "batch_type"=>"rp.batch_type",
-                       "stock_ledger"=>"rp.stock_ledger",
-                       "product_rate_pick"=>"rp.product_rate_pick",
-                       "product_purchase_rate"=>"rp.product_purchase_rate",
-                       "mrp_rate"=>"rp.mrp_rate",
-                       "sales_rate"=>"rp.sales_rate",
-                       "gst_rate"=>"rp.gst_rate",
-                       "max_level"=>"rp.max_level",
-                       "min_level"=>"rp.min_level",
-                       "description"=>"rp.description",
+                       "id"=>"pc.id",
+                       "product_category_name"=>"pc.product_category_name"
                        );
         return $TableColumn;
     }
@@ -122,7 +106,7 @@ class ProductCategoryController extends Controller
             $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
         }
         else
-           $query = $query->orderBy('rp.product_display_name', 'ASC');
+           $query = $query->orderBy('pc.product_category_name', 'ASC');
            
         return $query;      
     }
@@ -154,7 +138,7 @@ class ProductCategoryController extends Controller
         return response()->json([
                 'status' => true,
                 'status_code' => 200,
-                'message' => 'Raw Product List',
+                'message' => 'Product Category List',
                 'data' => $result
                 ]);
     }
@@ -168,7 +152,7 @@ class ProductCategoryController extends Controller
         return response()->json([
                 'status' => true,
                 'status_code' => 200,
-                'message' => 'Raw Product Full List',
+                'message' => 'Product Category Full List',
                 'data' => $result
                 ]);
     }

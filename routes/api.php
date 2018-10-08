@@ -60,9 +60,13 @@ $api->version('v1', function (Router $api) {
         $api->get('attachment/{id}', 'App\\Api\\V1\\Controllers\\AttachmentController@show');
         $api->delete('attachment/{id}', 'App\\Api\\V1\\Controllers\\AttachmentController@destroy');
         
-        //Taxes
+        /* Taxes */
         $api->get('tax_full_list','App\\Api\\V1\\Controllers\\Masters\\TaxController@full_list');
 
+        /*Product Categories*/
+        $api->post('product_category','App\\Api\\V1\\Controllers\\Masters\\ProductCategoryController@form');
+        $api->get('product_category','App\\Api\\V1\\Controllers\\Masters\\ProductCategoryController@index');
+        $api->get('product_category_full_list','App\\Api\\V1\\Controllers\\Masters\\ProductCategoryController@full_list');
     });
 
     $api->group( ['prefix'=> 'open'], function (Router $api) {

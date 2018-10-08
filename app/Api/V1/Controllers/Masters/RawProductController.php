@@ -17,6 +17,7 @@ class RawProductController extends Controller
     {
         $status = true;
         $id = $request->get('id');
+        $user = TokenController::getUser();
         $current_company_id = TokenController::getCompanyId();
         if($id == 'new')
         {
@@ -34,6 +35,7 @@ class RawProductController extends Controller
                 $raw = new RawProduct();
                 $raw->company_id = $current_company_id;
                 $message = "Record added Successfully";
+                $raw->created_by_id = $user->id;
             }
             
         }
@@ -60,6 +62,7 @@ class RawProductController extends Controller
             $raw->max_level = Input::get('raw_product_max_level');
             $raw->min_level = Input::get('raw_product_min_level');
             $raw->description = Input::get('raw_product_description');
+            $raw->updated_by_id = $user->id;
             try
             {
                 $raw->save();
