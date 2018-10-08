@@ -95,11 +95,13 @@ class RawProductController extends Controller
         $query = DB::table('raw_products as rp')
                 ->leftJoin('unit_of_measurements as uom1','rp.product_uom','uom1.id')
                 ->leftJoin('unit_of_measurements as uom2','rp.product_conv_uom','uom2.id')
+                ->leftJoin('taxes as t','rp.gst_rate','t.id')
                 ->select(
                 'rp.id','rp.product_name','rp.product_display_name','rp.product_code','rp.conv_factor','rp.batch_type','rp.stock_ledger','rp.product_rate_pick','rp.product_purchase_rate','rp.mrp_rate','rp.sales_rate','rp.gst_rate','rp.max_level','rp.min_level','rp.description'
                 )
                 ->addSelect('uom1.unit_name')
                 ->addSelect('uom2.unit_name as conversion_uom')
+                ->addSelect('t.id','t.tax_name','t.tax_rate')
                 ->where('rp.company_id',$current_company_id);
         return $query;
     }

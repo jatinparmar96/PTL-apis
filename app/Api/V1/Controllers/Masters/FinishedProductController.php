@@ -95,11 +95,13 @@ class FinishedProductController extends Controller
         $query = DB::table('finished_products as fp')
                 ->leftJoin('unit_of_measurements as uom1','fp.product_uom','uom1.id')
                 ->leftJoin('unit_of_measurements as uom2','fp.product_conv_uom','uom2.id')
+                ->leftJoin('taxes as t','rp.gst_rate','t.id')
                 ->select(
                 'fp.id','fp.product_name','fp.product_display_name','fp.product_code','fp.conv_factor','fp.batch_type','fp.stock_ledger','fp.product_rate_pick','fp.product_purchase_rate','fp.mrp_rate','fp.sales_rate','fp.gst_rate','fp.max_level','fp.min_level','fp.description'
                 )
                 ->addSelect('uom1.unit_name')
                 ->addSelect('uom2.unit_name as conversion_uom')
+                ->addSelect('t.id','t.tax_name','t.tax_rate')
                 ->where('fp.company_id',$current_company_id);
         return $query;
     }
