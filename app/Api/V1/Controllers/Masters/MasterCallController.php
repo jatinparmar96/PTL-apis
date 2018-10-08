@@ -19,11 +19,28 @@ class MasterCallController extends Controller
 		$data['worktypes_list'] = $this->worktypes_list();
 		$data['department_fulllist'] = $this->department_fulllist();
 		return response()->json([
-				'status' => 'success',
+				'status' => true,
 				'status_code' => 200,
 				'message' => 'Task form master data',
 				'data' => $data
 				]);
+	}
+
+	public function select_company()
+	{
+		$data['companies'] = $this->companies();
+		return response()->json([
+				'status' => true,
+				'status_code' => 200,
+				'message' => 'Companies List',
+				'data' => $data
+				]);
+	}
+
+	public function companies()
+	{
+		$companies = app('App\Api\V1\Controllers\Masters\CompanyController')->companies_list();
+		return $companies;
 	}
 
 	public function users_list()

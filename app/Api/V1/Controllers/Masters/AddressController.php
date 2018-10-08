@@ -10,10 +10,19 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AddressController extends Controller
 {
-  public static function storeAddress($request,$query='',$type)
+  public static function storeAddress(Request $request,$query='',$type,$type_id=0)
   {
-    $address = new Address();
+    $id = $request->get('address_id');
+    if ($id === 'new') 
+    {
+        $address = new Address();
+    }
+    else
+    {
+        $address = Address::findOrFail($id);
+    }
     $address->type = $type;
+    $address->type_id = $type_id;
     $address->block_no = $request->get($query.'address_building');
     $address->road_name = $request->get($query.'address_road_name');
     $address->landmark = $request->get($query.'address_landmark');
@@ -21,19 +30,15 @@ class AddressController extends Controller
     $address->country = $request->get($query.'address_country');
     $address->state = $request->get($query.'address_state');
     $address->city = $request->get($query.'address_city');    
-    try{
+    try
+    {
         $address->save();
     }
     catch(\Exception $e)
     {
-        return $e->getMessage();
+       throw new \Exception($e->getMessage());
     }
     return $address;
-  }
-  public static function updateAddressId(Address $address,$id)
-  {
-    $address->type_id = $id;
-    $address->save();
   }
 }
 

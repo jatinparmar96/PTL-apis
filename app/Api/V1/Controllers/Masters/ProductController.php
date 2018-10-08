@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Model\RawProduct;
 use Illuminate\Support\Facades\Input;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Api\V1\Controllers\Authentication\TokenController;
 
 class ProductController extends Controller
 {
@@ -27,8 +28,7 @@ class ProductController extends Controller
     public function storeRawProduct(Request $request)
     {
       
-        $token = JWTAuth::decode(JWTAuth::getToken());
-        $current_company_id = $token['company_id']['id'];
+        $current_company_id = TokenController::getCompanyId();
         $raw = new RawProduct();
         $raw->company_id = $current_company_id;
         $raw->product_name = Input::get('raw_product_name');

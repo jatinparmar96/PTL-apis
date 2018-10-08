@@ -16,9 +16,8 @@ class CreateGodownsTable extends Migration
         Schema::create('godowns', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
-            $table->string('name');
-            $table->string('code');
-            $table->integer('address_id')->nullable();
+            $table->string('godown_name');
+            $table->string('godown_code');
             $table->timestamps();
             $table->integer('created_by_id');
             $table->integer('updated_by_id');
