@@ -62,6 +62,8 @@ class RawProductController extends Controller
             $raw->max_level = Input::get('raw_product_max_level');
             $raw->min_level = Input::get('raw_product_min_level');
             $raw->description = Input::get('raw_product_description');
+            $raw->product_category = $request->get('raw_product_category');
+            $raw->product_hsn = $request->get('raw_product_hsn');
             $raw->updated_by_id = $user->id;
             try
             {
@@ -70,7 +72,7 @@ class RawProductController extends Controller
             catch(\Exception $e)
             {
                 $status = false;
-                $message = 'Something is wrong. Kindly Contact Admin';
+                $message = 'Something is wrong. Kindly Contact Admin'.$e;
             }
             $raw = $this->query()->where('rp.id',$raw->id)->first();
             return response()->json([
@@ -99,12 +101,14 @@ class RawProductController extends Controller
                 ->leftJoin('unit_of_measurements as uom1','rp.product_uom','uom1.id')
                 ->leftJoin('unit_of_measurements as uom2','rp.product_conv_uom','uom2.id')
                 ->leftJoin('taxes as t','rp.gst_rate','t.id')
+                ->leftJoin('product_categories as pc','rp.product_category','pc.id')
                 ->select(
-                'rp.id','rp.product_name','rp.product_display_name','rp.product_code','rp.conv_factor','rp.batch_type','rp.stock_ledger','rp.product_rate_pick','rp.product_purchase_rate','rp.mrp_rate','rp.sales_rate','rp.gst_rate','rp.max_level','rp.min_level','rp.description'
+                'rp.id','rp.product_name','rp.product_display_name','rp.product_code','rp.conv_factor','rp.batch_type','rp.stock_ledger','rp.product_rate_pick','rp.product_purchase_rate','rp.mrp_rate','rp.sales_rate','rp.gst_rate','rp.max_level','rp.min_level','rp.product_hsn','rp.description'
                 )
                 ->addSelect('uom1.unit_name')
                 ->addSelect('uom2.unit_name as conversion_uom')
-                ->addSelect('t.id','t.tax_name','t.tax_rate')
+                ->addSelect('t.tax_name','t.tax_rate')
+                ->addSelect('pc.product_category_name')
                 ->where('rp.company_id',$current_company_id);
         return $query;
     }

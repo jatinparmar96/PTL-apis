@@ -28,6 +28,8 @@ class CreateRawProductsTable extends Migration
             $table->double('product_purchase_rate',8,2);
             $table->double('mrp_rate',8,2);
             $table->double('sales_rate',8,2);
+            $table->int('product_category');
+            $table->string('product_hsn');
             $table->integer('max_level');
             $table->integer('min_level');
             $table->text('description');      
