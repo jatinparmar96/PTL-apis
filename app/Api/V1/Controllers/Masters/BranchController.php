@@ -151,7 +151,7 @@ class BranchController extends Controller
             $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
         }
         else
-           $query = $query->orderBy('name', 'ASC');
+           $query = $query->orderBy('b.name', 'ASC');
            
         return $query;      
     }

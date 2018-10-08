@@ -107,7 +107,7 @@ class GodownMasterController extends Controller
             $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
         }
         else
-           $query = $query->orderBy('godown_name', 'ASC');
+           $query = $query->orderBy('g.godown_name', 'ASC');
         return $query;       
     }
 

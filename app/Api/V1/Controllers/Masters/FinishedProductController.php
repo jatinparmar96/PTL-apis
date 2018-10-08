@@ -137,7 +137,7 @@ class FinishedProductController extends Controller
             $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
         }
         else
-           $query = $query->orderBy('product_display_name', 'ASC');
+           $query = $query->orderBy('fp.product_display_name', 'ASC');
            
         return $query;      
     }

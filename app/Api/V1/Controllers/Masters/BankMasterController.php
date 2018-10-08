@@ -123,6 +123,8 @@ class BankMasterController extends Controller
 
          $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
        }
+       else
+            $query = $query->orderBy('ba.account_name','ASC');
        return $query;       
     }
 

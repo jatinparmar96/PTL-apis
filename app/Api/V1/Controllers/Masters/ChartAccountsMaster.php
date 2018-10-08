@@ -142,6 +142,8 @@ class ChartAccountsMaster extends Controller
 
        $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
      }
+     else
+        $query = $query->orderBy('ca.company_name','ASC');
      return $query;       
   }
 
