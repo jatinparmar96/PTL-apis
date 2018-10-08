@@ -46,22 +46,22 @@ class RawProductController extends Controller
         }
         if($status)
         {
-            $raw->product_name = Input::get('raw_product_name');
-            $raw->product_display_name = Input::get('raw_product_display_name');
-            $raw->product_code = Input::get('raw_product_code');
-            $raw->product_uom = Input::get('raw_product_uom');
-            $raw->product_conv_uom = Input::get('raw_product_conv_uom');
-            $raw->conv_factor = Input::get('raw_product_conv_factor');
-            $raw->batch_type = Input::get('raw_product_batch_type');
-            $raw->stock_ledger = Input::get('raw_product_maintain_stock_ledger');
-            $raw->product_rate_pick = Input::get('raw_product_rate_pick_from');
-            $raw->product_purchase_rate = Input::get('raw_product_purchase_rate');
-            $raw->mrp_rate = Input::get('raw_product_mrp_rate');
-            $raw->sales_rate = Input::get('raw_product_sales_rate');
-            $raw->gst_rate = Input::get('raw_product_gst_slot');
-            $raw->max_level = Input::get('raw_product_max_level');
-            $raw->min_level = Input::get('raw_product_min_level');
-            $raw->description = Input::get('raw_product_description');
+            $raw->product_name = $request->get('raw_product_name');
+            $raw->product_display_name = $request->get('raw_product_display_name');
+            $raw->product_code = $request->get('raw_product_code');
+            $raw->product_uom = $request->get('raw_product_uom');
+            $raw->product_conv_uom = $request->get('raw_product_conv_uom');
+            $raw->conv_factor = $request->get('raw_product_conv_factor');
+            $raw->batch_type = $request->get('raw_product_batch_type');
+            $raw->stock_ledger = $request->get('raw_product_maintain_stock_ledger');
+            $raw->product_rate_pick = $request->get('raw_product_rate_pick_from');
+            $raw->product_purchase_rate = $request->get('raw_product_purchase_rate');
+            $raw->mrp_rate = $request->get('raw_product_mrp_rate');
+            $raw->sales_rate = $request->get('raw_product_sales_rate');
+            $raw->gst_rate = $request->get('raw_product_gst_slot');
+            $raw->max_level = $request->get('raw_product_max_level');
+            $raw->min_level = $request->get('raw_product_min_level');
+            $raw->description = $request->get('raw_product_description');
             $raw->product_category = $request->get('raw_product_category');
             $raw->product_hsn = $request->get('raw_product_hsn');
             $raw->updated_by_id = $user->id;

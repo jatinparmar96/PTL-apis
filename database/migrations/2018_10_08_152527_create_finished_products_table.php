@@ -28,12 +28,16 @@ class CreateFinishedProductsTable extends Migration
             $table->double('sales_rate',8,2);
             $table->integer('max_level');
             $table->integer('min_level');
+            
+            $table->string('product_hsn');
             $table->text('description');      
             $table->timestamps();
             $table->integer('created_by_id');
             $table->integer('updated_by_id');
             $table->timestamps();
-            $table->int('gst_rate')->references('id')->on('taxes');
+            
+            $table->integer('gst_rate')->references('id')->on('taxes');
+            $table->integer('product_category')->references('id')->on('product_categories');
         });
     }
 

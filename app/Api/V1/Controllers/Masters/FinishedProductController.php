@@ -27,52 +27,56 @@ class FinishedProductController extends Controller
             {
                 $status = false;
                 $message = 'Please fill the form correctly!!!';
-                $error['product_name'] = 'Raw Product with this name Already Exists';
+                $error['product_name'] = 'Finished Product with this name Already Exists';
             }
             else
             {
-                $raw = new FinishedProduct();
-                $raw->company_id = $current_company_id;
+                $finish = new FinishedProduct();
+                $finish->company_id = $current_company_id;
                 $message = "Record added Successfully";
+                $finish->created_by_id = $user->id;
             }
             
         }
         else
         {
             $message = 'Record Updated Successfully';
-            $raw = FinishedProduct::findOrFail($id);
+            $finish = FinishedProduct::findOrFail($id);
         }
         if($status)
         {
-            $raw->product_name = Input::get('finished_product_name');
-            $raw->product_display_name = Input::get('finished_product_display_name');
-            $raw->product_code = Input::get('finished_product_code');
-            $raw->product_uom = Input::get('finished_product_uom');
-            $raw->product_conv_uom = Input::get('finished_product_conv_uom');
-            $raw->conv_factor = Input::get('finished_product_conv_factor');
-            $raw->batch_type = Input::get('finished_product_batch_type');
-            $raw->stock_ledger = Input::get('finished_product_maintain_stock_ledger');
-            $raw->product_rate_pick = Input::get('finished_product_rate_pick_from');
-            $raw->product_purchase_rate = Input::get('finished_product_purchase_rate');
-            $raw->mrp_rate = Input::get('finished_product_mrp_rate');
-            $raw->sales_rate = Input::get('finished_product_sales_rate');
-            $raw->gst_rate = Input::get('finished_product_gst_slot');
-            $raw->max_level = Input::get('finished_product_max_level');
-            $raw->min_level = Input::get('finished_product_min_level');
-            $raw->description = Input::get('finished_product_description');
+            $finish->product_name = $request->get('finished_product_name');
+            $finish->product_display_name = $request->get('finished_product_display_name');
+            $finish->product_code = $request->get('finished_product_code');
+            $finish->product_uom = $request->get('finished_product_uom');
+            $finish->product_conv_uom = $request->get('finished_product_conv_uom');
+            $finish->conv_factor = $request->get('finished_product_conv_factor');
+            $finish->batch_type = $request->get('finished_product_batch_type');
+            $finish->stock_ledger = $request->get('finished_product_maintain_stock_ledger');
+            $finish->product_rate_pick = $request->get('finished_product_rate_pick_from');
+            $finish->product_purchase_rate = $request->get('finished_product_purchase_rate');
+            $finish->mrp_rate = $request->get('finished_product_mrp_rate');
+            $finish->sales_rate = $request->get('finished_product_sales_rate');
+            $finish->gst_rate = $request->get('finished_product_gst_slot');
+            $finish->max_level = $request->get('finished_product_max_level');
+            $finish->min_level = $request->get('finished_product_min_level');
+            $finish->description = $request->get('finished_product_description');
+            $finish->product_category = $request->get('finished_product_category');
+            $finish->product_hsn = $request->get('finished_product_hsn');
+            $finish->updated_by_id = $user->id;
             try
             {
-                $raw->save();
+                $finish->save();
             }
             catch(\Exception $e)
             {
                 $status = false;
                 $message = 'Something is wrong. Kindly Contact Admin';
             }
-            $raw = $this->query()->where('fp.id',$raw->id)->first();
+            $finish = $this->query()->where('fp.id',$finish->id)->first();
             return response()->json([
                 'status' => $status,
-                'data' => $raw,
+                'data' => $finish,
                 'message'=>$message
                 ]);
         }
@@ -97,7 +101,7 @@ class FinishedProductController extends Controller
                 ->leftJoin('unit_of_measurements as uom2','fp.product_conv_uom','uom2.id')
                 ->leftJoin('taxes as t','rp.gst_rate','t.id')
                 ->select(
-                'fp.id','fp.product_name','fp.product_display_name','fp.product_code','fp.conv_factor','fp.batch_type','fp.stock_ledger','fp.product_rate_pick','fp.product_purchase_rate','fp.mrp_rate','fp.sales_rate','fp.gst_rate','fp.max_level','fp.min_level','fp.description'
+                'fp.id','fp.product_name','fp.product_display_name','fp.product_code','fp.conv_factor','fp.batch_type','fp.stock_ledger','fp.product_rate_pick','fp.product_purchase_rate','fp.mrp_rate','fp.sales_rate','fp.gst_rate','fp.max_level','fp.min_level','fp.product_hsn','fp.description'
                 )
                 ->addSelect('uom1.unit_name')
                 ->addSelect('uom2.unit_name as conversion_uom')
