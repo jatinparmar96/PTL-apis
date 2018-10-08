@@ -30,7 +30,6 @@ class CreateRawProductsTable extends Migration
             $table->double('sales_rate',8,2);
             $table->integer('max_level');
             $table->integer('min_level');
-            $table->integer('reorder_level');
             $table->text('description');      
             $table->timestamps();
             $table->integer('created_by_id');
