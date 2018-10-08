@@ -60,6 +60,8 @@ $api->version('v1', function (Router $api) {
         $api->get('attachment/{id}', 'App\\Api\\V1\\Controllers\\AttachmentController@show');
         $api->delete('attachment/{id}', 'App\\Api\\V1\\Controllers\\AttachmentController@destroy');
         
+        //Taxes
+        $api->get('tax_full_list','App\\Api\\V1\\Controllers\\Masters\\TaxController@full_list');
 
     });
 
