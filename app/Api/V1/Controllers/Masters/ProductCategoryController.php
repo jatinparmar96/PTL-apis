@@ -1,0 +1,175 @@
+<?php
+
+namespace App\Api\V1\Controllers\Masters;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Model\ProductCategory;
+use Illuminate\Support\Facades\Input;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Api\V1\Controllers\Authentication\TokenController;
+use Illuminate\Support\Facades\DB;
+
+
+class ProductCategoryController extends Controller
+{
+    public function form(Request $request)
+    {
+        $status = true;
+        $id = $request->get('id');
+        $current_company_id = TokenController::getCompanyId();
+        if($id == 'new')
+        {
+            $count = RawProduct::where('product_name',$request->get('raw_product_name'))
+                                ->where('company_id',$current_company_id)
+                                ->count();
+            if($count>0)
+            {
+                $status = false;
+                $message = 'Please fill the form correctly!!!';
+                $error['product_name'] = 'Raw Product with this name Already Exists';
+            }
+            else
+            {
+                $raw = new RawProduct();
+                $raw->company_id = $current_company_id;
+                $message = "Record added Successfully";
+            }
+            
+        }
+        else
+        {
+            $message = 'Record Updated Successfully';
+            $raw = RawProduct::findOrFail($id);
+        }
+        if($status)
+        {
+            
+            try
+            {
+                $raw->save();
+            }
+            catch(\Exception $e)
+            {
+                $status = false;
+                $message = 'Something is wrong. Kindly Contact Admin';
+            }
+            $raw = $this->query()->where('rp.id',$raw->id)->first();
+            return response()->json([
+                'status' => $status,
+                'data' => $raw,
+                'message'=>$message
+                ]);
+        }
+        else
+        {
+            return response()->json([
+                'status' => $status,                
+                'message'=>$message,
+                'error' => $error,
+                ]);
+        }
+       
+
+    }
+
+    public function query()
+    {
+
+        $current_company_id = TokenController::getCompanyId();
+        $query = DB::table('raw_products as rp')
+                ->leftJoin('unit_of_measurements as uom1','rp.product_uom','uom1.id')
+                ->leftJoin('unit_of_measurements as uom2','rp.product_conv_uom','uom2.id')
+                ->leftJoin('taxes as t','rp.gst_rate','t.id')
+                ->select(
+                'rp.id','rp.product_name','rp.product_display_name','rp.product_code','rp.conv_factor','rp.batch_type','rp.stock_ledger','rp.product_rate_pick','rp.product_purchase_rate','rp.mrp_rate','rp.sales_rate','rp.gst_rate','rp.max_level','rp.min_level','rp.description'
+                )
+                ->addSelect('uom1.unit_name')
+                ->addSelect('uom2.unit_name as conversion_uom')
+                ->addSelect('t.id','t.tax_name','t.tax_rate')
+                ->where('rp.company_id',$current_company_id);
+        return $query;
+    }
+
+    public function TableColumn()
+    {         
+        $TableColumn = array(
+                       "id"=>"rp.id",
+                       "product_name"=>"rp.product_name",                       
+                       "product_display_name"=>"rp.product_display_name",
+                       "product_code"=>"rp.product_code",                       
+                       "conv_factor"=>"rp.conv_factor",
+                       "batch_type"=>"rp.batch_type",
+                       "stock_ledger"=>"rp.stock_ledger",
+                       "product_rate_pick"=>"rp.product_rate_pick",
+                       "product_purchase_rate"=>"rp.product_purchase_rate",
+                       "mrp_rate"=>"rp.mrp_rate",
+                       "sales_rate"=>"rp.sales_rate",
+                       "gst_rate"=>"rp.gst_rate",
+                       "max_level"=>"rp.max_level",
+                       "min_level"=>"rp.min_level",
+                       "description"=>"rp.description",
+                       );
+        return $TableColumn;
+    }
+
+    public function sort($query)
+    {
+       $sort = \Request::get('sort');
+       if(!empty($sort))
+        {
+            $TableColumn = $this->TableColumn();
+            $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
+        }
+        else
+           $query = $query->orderBy('rp.product_display_name', 'ASC');
+           
+        return $query;      
+    }
+
+    public function search($query)
+    {      
+        $search = \Request::get('search');
+        if(!empty($search))
+        {
+            $TableColumn = $this->TableColumn();
+            foreach($search as $key=>$searchvalue)
+            { 
+                if($searchvalue !== '') 
+                    $query =  $query->Where($TableColumn[$key], 'LIKE', '%'.$searchvalue.'%');
+            }
+        }
+
+        return $query;
+    }
+
+    //use Helpers;
+    public function index()
+    {
+        $limit = 10;
+        $query = $this->query();
+        $query = $this->search($query);
+        $query = $this->sort($query);
+        $result = $query->paginate($limit);
+        return response()->json([
+                'status' => true,
+                'status_code' => 200,
+                'message' => 'Raw Product List',
+                'data' => $result
+                ]);
+    }
+
+    public function full_list()
+    {
+        $query = $this->query();
+        $query = $this->search($query);
+        $query = $this->sort($query);
+        $result = $query->get();
+        return response()->json([
+                'status' => true,
+                'status_code' => 200,
+                'message' => 'Raw Product Full List',
+                'data' => $result
+                ]);
+    }
+}
